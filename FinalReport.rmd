@@ -52,7 +52,7 @@ basicCC + geom_bar(stat="identity", position = "dodge")
 
 This barchart shows that out of the approximately 340 Males who were infected with Covid-19, 57% were given the drug, and 43% were given the placebo.  
 
-### Numerical Summaries  
+## Numerical Summaries  
 
 ```{r}
 table1 <- xtabs(~treatment + infected, data=Maledata)
@@ -81,11 +81,58 @@ Therefore, we reject the null hypothesis.
 
 The Fisher Exact Test odds ratio is 1.47:1, when taking the odds ratio and computing it into a percent of effectiveness by using the formula O/(1+O) * 100 you get 59.5% effectiveness. 
 
+Ultimately the vaccine is 40% effective in the Male population, which is absolutely ineffective.
+
 
 # Females
 
+```{r}
+Femaledata <- filter(FinalData,sex== "gal")
+Femaledata$sex <- as.factor(Femaledata$sex)
+```
+
+## Barchart
+
+```{r}
+Females <- Femaledata %>% group_by(infected, treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(Females,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(Females,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+## Numerical Summaries  
+
+```{r}
+table1 <- xtabs(~treatment + infected, data=Femaledata)
+rowPerc(table1)
+colPerc(table1)
+print(table1)
+```
+
+
+## Inferential  
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+
 
 # Drug Users
+
+
+
+
+
 
 
 # LGBTQ
