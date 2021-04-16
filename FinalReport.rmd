@@ -27,6 +27,8 @@ The first step is to isolate the subpopulations of Males, Females, Drug Users, a
 ```{r}
 Maledata <- filter(FinalData,sex== "guy")
 Maledata$sex <- as.factor(Maledata$sex)
+Maledata$infected=factor(Maledata$infected)
+Maledata$infected<-relevel(Maledata$infected, "OK")
 ```
 
 
@@ -89,6 +91,9 @@ Ultimately the vaccine is 40% effective in the Male population, which is absolut
 ```{r}
 Femaledata <- filter(FinalData,sex== "gal")
 Femaledata$sex <- as.factor(Femaledata$sex)
+Femaledata$infected=factor(Femaledata$infected)
+Femaledata$infected<-relevel(Femaledata$infected, "OK")
+levels(Femaledata$infected)
 ```
 
 ## Barchart
@@ -111,33 +116,128 @@ basicCC + geom_bar(stat="identity", position = "dodge")
 ## Numerical Summaries  
 
 ```{r}
-table1 <- xtabs(~treatment + infected, data=Femaledata)
-rowPerc(table1)
-colPerc(table1)
-print(table1)
+table2 <- xtabs(~infected + treatment, data=Femaledata)
+rowPerc(table2)
+colPerc(table2)
+print(table2)
 ```
 
 
 ## Inferential  
 
 ```{r}
-chisq.test(table1)
-chisqtestGC(table1)
-fisher.test(table1)
+chisq.test(table2)
+chisqtestGC(table2)
+fisher.test(table2)
 ```
+
+The vaccine is 67% effective in Females. 
+
 
 
 # Drug Users
 
+# Method
+
+```{r}
+Druggiedata <- filter(FinalData,DrugUser== "yes")
+Druggiedata$DrugUser <- as.factor(Druggiedata$DrugUser)
+Druggiedata$infected=factor(Druggiedata$infected)
+Druggiedata$infected<-relevel(Druggiedata$infected, "OK")
+```
 
 
+## Barchart
 
+```{r}
+Druggies <- Druggiedata %>% group_by(infected, treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(Druggies,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(Druggies,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+
+## Numerical Summaries  
+
+```{r}
+table3 <- xtabs(~treatment + infected, data=Druggiedata)
+rowPerc(table3)
+colPerc(table3)
+print(table3)
+```
+
+
+## Inferential  
+
+```{r}
+chisq.test(table3)
+chisqtestGC(table3)
+fisher.test(table3)
+```
+
+The vaccine is 60% effective in the Druggie population.
 
 
 
 # LGBTQ
 
+# Method
+
+```{r}
+LGBTQdata <- filter(FinalData,LGBTQ== "gay")
+LGBTQdata$DrugUser <- as.factor(LGBTQdata$LGBTQ)
+LGBTQdata$infected=factor(LGBTQdata$infected)
+LGBTQdata$infected<-relevel(LGBTQdata$infected, "OK")
+```
+
+
+## Barchart
+
+```{r}
+LGBTQ <- LGBTQdata %>% group_by(infected, treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(LGBTQ,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(LGBTQ,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+
+## Numerical Summaries  
+
+```{r}
+table4 <- xtabs(~treatment + infected, data=LGBTQdata)
+rowPerc(table4)
+colPerc(table4)
+print(table4)
+```
+
+
+## Inferential  
+
+```{r}
+chisq.test(table4)
+chisqtestGC(table4)
+fisher.test(table4)
+```
+
+The vaccine is not effective in the LGBTQ population, it is only 29% effective. 
+
 
 # Discussion and Conclusion
 
-
+We looked at 4 populations, we found that...
